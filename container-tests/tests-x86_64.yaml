@@ -1,0 +1,29 @@
+schemaVersion: "2.0.0"
+
+globalEnvVars:
+  - key: "VIRTUAL_ENV"
+    value: "/env"
+  - key: "PATH"
+    value: "/env/bin:$PATH"
+
+fileExistenceTests:
+
+# check that the qemu-aarch64-static file exists
+  - name: 'qemu-aarch64-static'
+    path: '/usr/bin/qemu/qemu-aarch64-static'
+    shouldExist: true
+
+# check that the qemu-x86_64-aarch64-static file exists
+  - name: 'qemu-x86_64-aarch64-static'
+    path: '/usr/bin/qemu/qemu-x86_64-aarch64-static'
+    shouldExist: true
+
+# check that the qemu-arm-static file exists
+  - name: 'qemu-arm-static'
+    path: '/usr/bin/qemu/qemu-arm-static'
+    shouldExist: true
+
+# check that the qemu-x86_64-arm-static file exists
+  - name: 'qemu-x86_64-arm-static'
+    path: '/usr/bin/qemu/qemu-x86_64-arm-static'
+    shouldExist: true

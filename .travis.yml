@@ -1,0 +1,34 @@
+sudo: required
+services: docker
+language: bash
+
+git:
+  depth: 1
+
+env:
+  global:
+    - REPO=${DOCKER_USERNAME}/qemu-user-static
+    - TRAVIS_QUALIFIER=-travis-ci
+  matrix:
+    - ARCH=x86_64
+    - ARCH=armv7hl
+    - ARCH=aarch64
+
+before_script:
+  - uname -a
+  - curl -LO https://storage.googleapis.com/container-structure-test/v0.2.1/container-structure-test && chmod +x container-structure-test && sudo mv container-structure-test /usr/local/bin/
+
+script:
+  - make build BUILD_OPTS="--build-arg QEMU_ARCH=${ARCH}" TAG=${ARCH} VARIANT=${TRAVIS_QUALIFIER}
+  - docker images
+  - make login
+  - make push TAG=${ARCH} VARIANT=${TRAVIS_QUALIFIER}
+#Tests
+  - make pull TAG=${ARCH} VARIANT=${TRAVIS_QUALIFIER}
+  - container-structure-test -test.v -image ${REPO}:${ARCH}${TRAVIS_QUALIFIER} container-tests/tests-${ARCH}.yaml
+#Deploy
+  - echo "Tagging ${REPO}:${ARCH}"
+  - make tag TAG=${ARCH} VARIANT=${TRAVIS_QUALIFIER}
+  - docker images
+  - make push TAG=${ARCH}
+  - make logout
